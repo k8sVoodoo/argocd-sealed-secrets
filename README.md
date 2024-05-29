@@ -16,7 +16,7 @@ brew install kubeseal
 ## 2. Generate SealedSecret
 You can try to use kubeseal to encrypt secret.
 
-`kubeseal --controller-namespace default --format yaml -f charts/nginx/manifests/mysecret.yaml > charts/nginx/templates/mysealedsecret.yaml`
+`kubeseal --controller-namespace default --format yaml -f charts/nginx/examples/mysecret.yaml > charts/nginx/templates/mysealedsecret.yaml`
 
 Typically you will not check the manifest/mysecret.yaml into git. This is only an example. You will run that command then delete the mysecret.yaml so that you do not commit that code into git.
 
