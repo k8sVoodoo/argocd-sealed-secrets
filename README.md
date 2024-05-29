@@ -85,7 +85,18 @@ kubectl get secret/my-secret --template={{.data.secret}} | base64 -d
 
 Bonus: Try running the kubeseal from earlier but with a different secret file with your own secret and verify that secret was updated with your new secret. Ensure your value of your secret in your secret.yaml is base64 encoded prior to running the kubeseal command. Then once you click refresh in the argocd UI and see the secret updated then you can run the get secret command and decode the secret to verify your new secret value.
 
-## 6. Cleanup
+## 6. If no direct access to the Cluster
+If you want to grab the public key you can run this command from someone who has access to the cluster then can share out to engineers to save onto your developer machine to be able to encrypt secrets without access to the cluster directly.
+```
+kubeseal --controller-name=sealed-secrets-controller --controller-namespace=default --fetch-cert > public-key-cert.pem
+```
+
+Then you can run this command to encrypt your secret without direct access to the cluster.
+```
+kubeseal --format=yaml --cert=public-key-cert.pem < secret.yaml > sealed-secret.yaml
+```
+
+## 7. Cleanup
 
 ```
 kubectl delete -f nginx-application.yaml
