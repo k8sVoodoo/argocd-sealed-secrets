@@ -1,6 +1,6 @@
 # argocd & sealed secrets
 
-## 1. Install Argo CD and Sealed Secrets related resources
+## 1. Install Argo CD and Sealed Secrets resources
 ```
 helm repo add argo https://argoproj.github.io/argo-helm
 helm install my-argo-cd argo/argo-cd
@@ -13,10 +13,12 @@ helm install sealed-secrets-controller bitnami-labs/sealed-secrets
 brew install kubeseal
 ```
 
-## (Optional) 2. Generate SealedSecret
+## 2. Generate SealedSecret
 You can try to use kubeseal to encrypt secret.
 
 `kubeseal --controller-namespace default --format yaml -f charts/nginx/manifests/mysecret.yaml > charts/nginx/templates/mysealedsecret.yaml`
+
+Typically you will not check the manifest/mysecret.yaml into git. This is only an example. You will run that command then delete the mysecret.yaml so that you do not commit that code into git.
 
 ## 3. Access Argo CD portal
 ```
@@ -37,6 +39,12 @@ password: (Refer to the output)
 Run this command, and then Argo CD will auto sync your application.
 
 `kubectl apply -f nginx-application.yaml`
+`kubectl get app`
+
+```
+NAME    SYNC STATUS   HEALTH STATUS
+nginx   Synced        Healthy
+```
 
 NOTE: if feature branch updating application yaml to targetRevision: your-feature-branch
 
@@ -47,6 +55,8 @@ If everything works well, you will see the secret is deployed to the cluster.
 kubectl get secrets my-secret
 kubectl get secret/my-secret --template={{.data.secret}} | base64 -D    
 ```
+
+Bonus: Try running the kubeseal from earlier but with a different secret file with your own secret and verify that secret was updated with your new secret.
 
 ## 6. Cleanup
 
