@@ -56,7 +56,7 @@ kubectl get secrets my-secret
 kubectl get secret/my-secret --template={{.data.secret}} | base64 -D    
 ```
 
-Bonus: Try running the kubeseal from earlier but with a different secret file with your own secret and verify that secret was updated with your new secret. Ensure your value of your secret in your secret.yaml is base64 encoded prior to running the kubeseal command.
+Bonus: Try running the kubeseal from earlier but with a different secret file with your own secret and verify that secret was updated with your new secret. Ensure your value of your secret in your secret.yaml is base64 encoded prior to running the kubeseal command. Then once you click sync in the argocd UI then you can run the get secret command and decode the secret to verify your new secret value.
 
 ## 6. Cleanup
 
