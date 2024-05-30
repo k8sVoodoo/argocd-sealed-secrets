@@ -68,7 +68,7 @@ git push
 Run this command, and then Argo CD will auto sync your application.
 
 `kubectl apply -f nginx-application.yaml`
-`kubectl get app`
+`kubectl get applications.argoproj.io`
 
 ```
 NAME    SYNC STATUS   HEALTH STATUS
