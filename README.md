@@ -77,7 +77,7 @@ username: admin
 password: <password>
 ```
 
-## 4. Install Argo CD application
+## 5. Install Argo CD application
 Update the `targetRevision` key in the `nginx-application.yaml` to reconcile against your branch
 ```yaml
 targetRevision: <yourFeatureBranch>
@@ -91,42 +91,45 @@ git commit -m "Created a SealedSecret & reconciling against my feature branch"
 git push
 ```
 
-Run this command, and then Argo CD will auto sync your application.
-
-`kubectl apply -f nginx-application.yaml`
-`kubectl get applications.argoproj.io`
-
+Run this command and Argo CD will begin reconciling your application.
+```bash
+$ kubectl apply -f nginx-application.yaml
 ```
+
+Check on the status of the reconciliation by running the following command:
+```bash
+$ kubectl get applications.argoproj.io
+
 NAME    SYNC STATUS   HEALTH STATUS
 nginx   Synced        Healthy
 ```
 
-## 5. Verify the result
-If everything works well, you will see the secret is deployed to the cluster.
-
-```
+## 6. Verify the result
+If everything has been configured correctly, then you will see your secret has been deployed to the cluster.
+```bash
 kubectl get secrets my-secret
 kubectl get secret/my-secret --template={{.data.secret}} | base64 -d   
 ```
 
-Bonus: Try running the kubeseal from earlier but with a different secret file with your own secret and verify that secret was updated with your new secret. Ensure your value of your secret in your secret.yaml is base64 encoded prior to running the kubeseal command. Then once you click refresh in the argocd UI and see the secret updated then you can run the get secret command and decode the secret to verify your new secret value.
-
-## 6. If no direct access to the Cluster
-If you want to grab the public key you can run this command from someone who has access to the cluster then can share out to engineers to save onto your developer machine to be able to encrypt secrets without access to the cluster directly.
-```
-kubeseal --controller-name=sealed-secrets-controller --controller-namespace=default --fetch-cert > public-key-cert.pem
-```
-
-Then you can run this command to encrypt your secret without direct access to the cluster.
-```
-kubeseal --format=yaml --cert=public-key-cert.pem < secret.yaml > sealed-secret.yaml
-```
-
 ## 7. Cleanup
-
-```
+```bash
 kubectl delete -f nginx-application.yaml
 helm uninstall my-argo-cd 
 helm uninstall sealed-secrets-controller
-delete your secret yaml from examples folder
 ```
+
+## Bonus
+### Kubeseal on the go
+If you want to manage your SealedSecrets without direct access to your cluster you'll need to grab the public key that your `sealed-secrets` installation is using.
+
+Run this command while you do have access to the cluster, then can use the public key with the `kubeseal` CLI
+```bash
+kubeseal --controller-name=sealed-secrets-controller --controller-namespace=default --fetch-cert > public-key-cert.pem
+```
+
+Now you can run the following command to encrypt your secret without direct access to the cluster.
+```bash
+kubeseal --format=yaml --cert=public-key-cert.pem < secret.yaml > sealed-secret.yaml
+```
+
+If you've set up ArgoCD to reconcile from Git, you can push the new `sealed-secret.yaml` file to Git to update the value on your cluster.
